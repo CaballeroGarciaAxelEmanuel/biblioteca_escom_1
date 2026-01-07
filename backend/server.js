@@ -4,7 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const configuracionRoutes = require('./routes/configuracion');
 const app = express();
-const PORT = 3000;
+const PORT process.env.PORT = 3000;
 
 /* ===== CORS (primero) ===== */
 app.use(cors({
