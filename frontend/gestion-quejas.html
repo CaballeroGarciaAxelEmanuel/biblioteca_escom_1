@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Quejas y Sugerencias - Biblioteca ESCOM</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <link rel="stylesheet" href="css/gestion-usuarios.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        /* Header con botones */
+        .header {
+            background: linear-gradient(135deg, #00447c 0%, #00264d 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-header {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-header:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .quejas-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .quejas-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .quejas-header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .filtros-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filtro-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filtros-container label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .filtros-container select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .quejas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .queja-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+
+        .queja-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .queja-card.tipo-QUEJA {
+            border-left-color: #e74c3c;
+        }
+
+        .queja-card.tipo-SUGERENCIA {
+            border-left-color: #3498db;
+        }
+
+        .queja-card.tipo-FELICITACION {
+            border-left-color: #2ecc71;
+        }
+
+        .queja-card.no-leida {
+            background: #fffbea;
+            border-left-width: 6px;
+        }
+
+        .badge-no-leida {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .queja-header-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tipo-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .tipo-badge.QUEJA {
+            background-color: #fee;
+            color: #e74c3c;
+        }
+
+        .tipo-badge.SUGERENCIA {
+            background-color: #e3f2fd;
+            color: #3498db;
+        }
+
+        .tipo-badge.FELICITACION {
+            background-color: #e8f5e9;
+            color: #2ecc71;
+        }
+
+        .estado-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .estado-badge.pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .estado-badge.en_proceso {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .estado-badge.resuelta {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .estado-badge.cerrada {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .queja-contenido {
+            margin: 15px 0;
+        }
+
+        .queja-contenido p {
+            margin: 8px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .queja-contenido strong {
+            color: #333;
+        }
+
+        .queja-descripcion {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #666;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .queja-respuesta {
+            background-color: #e8f5e9;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+            border-left: 3px solid #4caf50;
+        }
+
+        .queja-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .fecha-info {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .acciones-queja {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-accion {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .btn-marcar-leido {
+            background-color: #9c27b0;
+            color: white;
+        }
+
+        .btn-marcar-leido:hover {
+            background-color: #7b1fa2;
+        }
+
+        .btn-marcar-leido.leida {
+            background-color: #9e9e9e;
+        }
+
+        .btn-marcar-leido.leida:hover {
+            background-color: #757575;
+        }
+
+        .btn-responder {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-responder:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-cambiar-estado {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-cambiar-estado:hover {
+            background-color: #e67e22;
+        }
+
+        .btn-eliminar {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-eliminar:hover {
+            background-color: #c0392b;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-submit {
+            background-color: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #5568d3;
+        }
+
+        .estadisticas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: 32px;
+            color: #667eea;
+        }
+
+        .stat-card.alerta h3 {
+            color: #e74c3c;
+        }
+
+        .stat-card p {
+            margin: 10px 0 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .no-quejas {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .no-quejas h3 {
+            color: #999;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .quejas-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filtros-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filtro-group {
+                width: 100%;
+            }
+
+            .filtros-container select {
+                width: 100%;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con botones de navegación -->
+    <div class="header">
+        <div class="header-title">
+            📋 Gestión de Quejas y Sugerencias - CU-ADMIN-05
+        </div>
+        <div class="header-buttons">
+            <a href="dashboard-admin.html" class="btn-header">
+                🏠 Regresar al Dashboard
+            </a>
+            <button onclick="cerrarSesion()" class="btn-header">
+                🚪 Cerrar Sesión
+            </button>
+        </div>
+    </div>
+
+    <div class="quejas-container">
+        <div class="quejas-header">
+            <h1>Administra las quejas y sugerencias de los usuarios</h1>
+            <p>Visualiza, responde y gestiona el estado de las quejas y sugerencias</p>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="estadisticas">
+            <div class="stat-card">
+                <h3 id="total-quejas">0</h3>
+                <p>Total de Quejas/Sugerencias</p>
+            </div>
+            <div class="stat-card alerta">
+                <h3 id="total-no-leidas">0</h3>
+                <p>Sin Leer ⚠️</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-pendientes">0</h3>
+                <p>Pendientes</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-proceso">0</h3>
+                <p>En Proceso</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-resueltas">0</h3>
+                <p>Resueltas</p>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filtros-container">
+            <div class="filtro-group">
+                <label for="filtro-tipo">Tipo:</label>
+                <select id="filtro-tipo" onchange="filtrarQuejas()">
+                    <option value="todos">Todos</option>
+                    <option value="QUEJA">Quejas</option>
+                    <option value="SUGERENCIA">Sugerencias</option>
+                    <option value="FELICITACION">Felicitaciones</option>
+                </select>
+            </div>
+
+            <div class="filtro-group">
+                <label for="filtro-estado">Estado:</label>
+                <select id="filtro-estado" onchange="filtrarQuejas()">
+                    <option value="todos">Todos</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en_proceso">En Proceso</option>
+                    <option value="resuelta">Resuelta</option>
+                    <option value="cerrada">Cerrada</option>
+                </select>
+            </div>
+
+            <div class="filtro-group">
+                <label for="filtro-leido">Lectura:</label>
+                <select id="filtro-leido" onchange="filtrarQuejas()">
+                    <option value="todos">Todos</option>
+                    <option value="no_leidas">Sin Leer</option>
+                    <option value="leidas">Leídas</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Grid de Quejas -->
+        <div class="quejas-grid" id="quejas-grid">
+            <!-- Las quejas se cargarán aquí dinámicamente -->
+        </div>
+
+        <!-- Mensaje cuando no hay quejas -->
+        <div class="no-quejas" id="no-quejas" style="display: none;">
+            <h3>📭 No hay quejas o sugerencias para mostrar</h3>
+            <p>Los registros aparecerán aquí cuando los usuarios envíen quejas o sugerencias</p>
+        </div>
+    </div>
+
+    <!-- Modal para Responder -->
+    <div id="modalResponder" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h2>✉️ Responder Queja/Sugerencia</h2>
+            <form id="formResponder" onsubmit="enviarRespuesta(event)">
+                <input type="hidden" id="queja-id-responder">
+                <div class="form-group">
+                    <label for="respuesta">Respuesta:</label>
+                    <textarea id="respuesta" required placeholder="Escribe tu respuesta aquí..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Enviar Respuesta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Cambiar Estado -->
+    <div id="modalEstado" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalEstado()">&times;</span>
+            <h2>🔄 Cambiar Estado</h2>
+            <form id="formEstado" onsubmit="cambiarEstado(event)">
+                <input type="hidden" id="queja-id-estado">
+                <div class="form-group">
+                    <label for="nuevo-estado">Nuevo Estado:</label>
+                    <select id="nuevo-estado" required>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_proceso">En Proceso</option>
+                        <option value="resuelta">Resuelta</option>
+                        <option value="cerrada">Cerrada</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Cambiar Estado</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let quejasData = [];
+        let quejasFiltradas = [];
+
+        // Cargar quejas al iniciar
+        window.onload = function() {
+            cargarQuejas();
+        };
+
+        // Función para cerrar sesión
+        function cerrarSesion() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.removeItem('biblioteca_user');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Cargar todas las quejas
+        async function cargarQuejas() {
+            try {
+                const response = await fetch('http://localhost:3000/api/quejas');
+                if (!response.ok) throw new Error('Error al cargar quejas');
+                
+                quejasData = await response.json();
+                quejasFiltradas = quejasData;
+                
+                actualizarEstadisticas();
+                mostrarQuejas();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar las quejas: ' + error.message);
+            }
+        }
+
+        // Actualizar estadísticas
+        function actualizarEstadisticas() {
+            document.getElementById('total-quejas').textContent = quejasData.length;
+            document.getElementById('total-no-leidas').textContent = 
+                quejasData.filter(q => !q.leido).length;
+            document.getElementById('total-pendientes').textContent = 
+                quejasData.filter(q => q.estado === 'pendiente').length;
+            document.getElementById('total-proceso').textContent = 
+                quejasData.filter(q => q.estado === 'en_proceso').length;
+            document.getElementById('total-resueltas').textContent = 
+                quejasData.filter(q => q.estado === 'resuelta').length;
+        }
+
+        // Mostrar quejas en el grid
+        function mostrarQuejas() {
+            const grid = document.getElementById('quejas-grid');
+            const noQuejas = document.getElementById('no-quejas');
+
+            if (quejasFiltradas.length === 0) {
+                grid.style.display = 'none';
+                noQuejas.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            noQuejas.style.display = 'none';
+            
+            grid.innerHTML = quejasFiltradas.map(queja => `
+                <div class="queja-card tipo-${queja.tipo} ${!queja.leido ? 'no-leida' : ''}">
+                    ${!queja.leido ? '<span class="badge-no-leida">NUEVO</span>' : ''}
+                    
+                    <div class="queja-header-card">
+                        <span class="tipo-badge ${queja.tipo}">${queja.tipo}</span>
+                        <span class="estado-badge ${queja.estado}">${formatearEstado(queja.estado)}</span>
+                    </div>
+                    
+                    <div class="queja-contenido">
+                        <p><strong>👤 Usuario:</strong> ${queja.nombre_usuario || 'Anónimo'}</p>
+                        <p><strong>📧 Email:</strong> ${queja.email || 'No proporcionado'}</p>
+                        <p><strong>📖 Estado de lectura:</strong> ${queja.leido ? '✅ Leída' : '❌ Sin leer'}</p>
+                        
+                        <div class="queja-descripcion">
+                            <strong>Descripción:</strong><br>
+                            ${queja.descripcion}
+                        </div>
+                        
+                        ${queja.respuesta ? `
+                            <div class="queja-respuesta">
+                                <strong>✅ Respuesta:</strong><br>
+                                ${queja.respuesta}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="queja-footer">
+                        <div class="fecha-info">
+                            📅 ${formatearFecha(queja.fecha_creacion)}
+                        </div>
+                        <div class="acciones-queja">
+                            <button class="btn-accion btn-marcar-leido ${queja.leido ? 'leida' : ''}" 
+                                    onclick="marcarComoLeido(${queja.id}, ${!queja.leido})"
+                                    title="${queja.leido ? 'Marcar como no leída' : 'Marcar como leída'}">
+                                ${queja.leido ? '👁️‍🗨️' : '👁️'}
+                            </button>
+                            ${!queja.respuesta ? `
+                                <button class="btn-accion btn-responder" onclick="abrirModalResponder(${queja.id})">
+                                    Responder
+                                </button>
+                            ` : ''}
+                            <button class="btn-accion btn-cambiar-estado" onclick="abrirModalEstado(${queja.id}, '${queja.estado}')">
+                                Estado
+                            </button>
+                            <button class="btn-accion btn-eliminar" onclick="eliminarQueja(${queja.id})">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Marcar como leído/no leído
+        async function marcarComoLeido(id, leido) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/quejas/${id}/marcar-leido`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ leido })
+                });
+                
+                if (!response.ok) throw new Error('Error al marcar como leído');
+                
+                await cargarQuejas();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error al marcar como leído: ' + error.message);
+            }
+        }
+
+        // Filtrar quejas
+        function filtrarQuejas() {
+            const tipo = document.getElementById('filtro-tipo').value;
+            const estado = document.getElementById('filtro-estado').value;
+            const leido = document.getElementById('filtro-leido').value;
+            
+            quejasFiltradas = quejasData.filter(queja => {
+                const cumpleTipo = tipo === 'todos' || queja.tipo === tipo;
+                const cumpleEstado = estado === 'todos' || queja.estado === estado;
+                const cumpleLeido = leido === 'todos' || 
+                                   (leido === 'no_leidas' && !queja.leido) ||
+                                   (leido === 'leidas' && queja.leido);
+                return cumpleTipo && cumpleEstado && cumpleLeido;
+            });
+            
+            mostrarQuejas();
+        }
+
+        // Abrir modal responder
+        function abrirModalResponder(id) {
+            document.getElementById('queja-id-responder').value = id;
+            document.getElementById('respuesta').value = '';
+            document.getElementById('modalResponder').style.display = 'block';
+        }
+
+        // Cerrar modal responder
+        function cerrarModal() {
+            document.getElementById('modalResponder').style.display = 'none';
+        }
+
+        // Enviar respuesta
+        async function enviarRespuesta(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('queja-id-responder').value;
+            const respuesta = document.getElementById('respuesta').value;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/quejas/${id}/responder`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ respuesta })
+                });
+                
+                if (!response.ok) throw new Error('Error al enviar respuesta');
+                
+                alert('✅ Respuesta enviada correctamente (automáticamente marcada como leída)');
+                cerrarModal();
+                cargarQuejas();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error al enviar respuesta: ' + error.message);
+            }
+        }
+
+        // Abrir modal cambiar estado
+        function abrirModalEstado(id, estadoActual) {
+            document.getElementById('queja-id-estado').value = id;
+            document.getElementById('nuevo-estado').value = estadoActual;
+            document.getElementById('modalEstado').style.display = 'block';
+        }
+
+        // Cerrar modal estado
+        function cerrarModalEstado() {
+            document.getElementById('modalEstado').style.display = 'none';
+        }
+
+        // Cambiar estado
+        async function cambiarEstado(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('queja-id-estado').value;
+            const estado = document.getElementById('nuevo-estado').value;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/quejas/${id}/estado`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ estado })
+                });
+                
+                if (!response.ok) throw new Error('Error al cambiar estado');
+                
+                alert('✅ Estado actualizado correctamente');
+                cerrarModalEstado();
+                cargarQuejas();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error al cambiar estado: ' + error.message);
+            }
+        }
+
+        // Eliminar queja
+        async function eliminarQueja(id) {
+            if (!confirm('¿Estás seguro de que deseas eliminar esta queja/sugerencia?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/quejas/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Error al eliminar');
+                
+                alert('✅ Queja/Sugerencia eliminada correctamente');
+                cargarQuejas();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error al eliminar: ' + error.message);
+            }
+        }
+
+        // Formatear fecha
+        function formatearFecha(fecha) {
+            const date = new Date(fecha);
+            const opciones = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('es-MX', opciones);
+        }
+
+        // Formatear estado
+        function formatearEstado(estado) {
+            const estados = {
+                'pendiente': 'Pendiente',
+                'en_proceso': 'En Proceso',
+                'resuelta': 'Resuelta',
+                'cerrada': 'Cerrada'
+            };
+            return estados[estado] || estado;
+        }
+
+        // Cerrar modales al hacer clic fuera
+        window.onclick = function(event) {
+            const modalResponder = document.getElementById('modalResponder');
+            const modalEstado = document.getElementById('modalEstado');
+            
+            if (event.target === modalResponder) {
+                cerrarModal();
+            }
+            if (event.target === modalEstado) {
+                cerrarModalEstado();
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrador | Biblioteca ESCOM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #00447c 0%, #00264d 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-details {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-role {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Contenedor */
+        .container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            padding: 20px 0;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: #f0f7ff;
+            border-left-color: #00447c;
+        }
+        
+        .nav-item.active {
+            background: #e8f2ff;
+            border-left-color: #00447c;
+            color: #00447c;
+            font-weight: 600;
+        }
+        
+        /* Contenido Principal */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+        
+        .welcome-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .welcome-title {
+            font-size: 28px;
+            color: #00447c;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        /* Estadísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .stat-icon.users { background: #e3f2fd; color: #1976d2; }
+        .stat-icon.complaints { background: #fff3e0; color: #f57c00; }
+        .stat-icon.penalties { background: #ffebee; color: #d32f2f; }
+        .stat-icon.config { background: #f3e5f5; color: #7b1fa2; }
+        
+        .stat-info h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        /* Acciones Rápidas */
+        .quick-actions {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #00447c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .action-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: white;
+            border-color: #00447c;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .action-btn span {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .action-btn h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .action-btn p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <h1>📚 Panel de Control - Administrador</h1>
+            </div>
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name" id="user-name">Administrador</div>
+                    <div class="user-role">Rol: Administrador</div>
+                </div>
+                <button class="logout-btn" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <span>🏠</span>
+                    <span>Dashboard</span>
+                </li>
+                
+                <li class="nav-item" onclick="window.location.href='gestion-usuarios.html'">
+                    <span>👥</span>
+                    <span>Gestión de Usuarios</span>
+                </li>
+                
+                <li class="nav-item" onclick="window.location.href='gestion-multas.html'">
+                    <span>💰</span>
+                    <span>Gestión de Multas</span>
+                </li>
+                
+                <li class="nav-item" onclick="window.location.href='reportes-mensuales.html'">
+                    <span>📈</span>
+                    <span>Reportes Mensuales</span>
+                </li>
+
+                <li class="nav-item" onclick="window.location.href='gestion-quejas.html'">
+                    <span>📋</span>
+                    <span>Quejas y Sugerencias</span>
+                </li>
+
+                <li class="nav-item" onclick="window.location.href='configuracion-sistema.html'">
+                    <span>⚙️</span>
+                    <span>Configuración del Sistema</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Bienvenida -->
+            <div class="welcome-card">
+                <h1 class="welcome-title" id="welcome-title">Bienvenido al Panel de Control</h1>
+                <p class="welcome-subtitle">Sistema de Gestión Integral de Biblioteca - ESCOM IPN</p>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon users">👥</div>
+                    <div class="stat-info">
+                        <h3>Total de Usuarios</h3>
+                        <div class="stat-number" id="total-usuarios">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon complaints">📋</div>
+                    <div class="stat-info">
+                        <h3>Quejas Sin Leer</h3>
+                        <div class="stat-number" id="quejas-sin-leer">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon penalties">💰</div>
+                    <div class="stat-info">
+                        <h3>Multas Pendientes</h3>
+                        <div class="stat-number" id="multas-pendientes">$0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon config">⚙️</div>
+                    <div class="stat-info">
+                        <h3>Sistema</h3>
+                        <div class="stat-number">✅</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="quick-actions">
+                <h2 class="section-title">⚡ Acciones Rápidas</h2>
+                <div class="actions-grid">
+                    <div class="action-btn" onclick="window.location.href='gestion-usuarios.html'">
+                        <span>👥</span>
+                        <h3>Gestionar Usuarios</h3>
+                        <p>Crear, editar y administrar usuarios</p>
+                    </div>
+                    
+                    <div class="action-btn" onclick="window.location.href='gestion-multas.html'">
+                        <span>💰</span>
+                        <h3>Gestionar Multas</h3>
+                        <p>Revisar y cobrar multas pendientes</p>
+                    </div>
+                    
+                    <div class="action-btn" onclick="window.location.href='reportes-mensuales.html'">
+                        <span>📊</span>
+                        <h3>Reportes Mensuales</h3>
+                        <p>Consultar estadísticas del sistema</p>
+                    </div>
+                    
+                    <div class="action-btn" onclick="window.location.href='gestion-quejas.html'">
+                        <span>📋</span>
+                        <h3>Quejas y Sugerencias</h3>
+                        <p>Revisar y responder mensajes</p>
+                    </div>
+                    
+                    <div class="action-btn" onclick="window.location.href='configuracion-sistema.html'">
+                        <span>⚙️</span>
+                        <h3>Configuración</h3>
+                        <p>Ajustar reglas del sistema</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="quick-actions" style="margin-top: 30px;">
+                <h2 class="section-title">ℹ️ Información del Sistema</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h3 style="margin-bottom: 10px; color: #00447c;">📋 Estado del Sistema</h3>
+                        <ul style="list-style: none; color: #555;">
+                            <li style="margin-bottom: 8px;">✅ Backend: Conectado</li>
+                            <li style="margin-bottom: 8px;">✅ Base de datos: Activa</li>
+                            <li style="margin-bottom: 8px;">📊 Usuarios registrados: <span id="usuarios-registrados">0</span></li>
+                            <li style="margin-bottom: 8px;">🕐 Última actividad: <span id="ultima-actividad">--:--</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="margin-bottom: 10px; color: #00447c;">👤 Información de Sesión</h3>
+                        <ul style="list-style: none; color: #555;">
+                            <li style="margin-bottom: 8px;">Nombre: <span id="info-nombre">-</span></li>
+                            <li style="margin-bottom: 8px;">Email: <span id="info-email">-</span></li>
+                            <li style="margin-bottom: 8px;">Rol: <span id="info-rol">-</span></li>
+                            <li style="margin-bottom: 8px;">Sesión iniciada: <span id="info-sesion">-</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2025 Sistema de Biblioteca ESCOM - Instituto Politécnico Nacional</p>
+        <p>Versión 1.0 | Módulo Administrativo</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = JSON.parse(localStorage.getItem('biblioteca_user') || '{}');
+            
+            if (userData.nombre) {
+                document.getElementById('user-name').textContent = userData.nombre;
+                document.getElementById('welcome-title').textContent = `Bienvenido, ${userData.nombre}`;
+                document.getElementById('info-nombre').textContent = userData.nombre;
+                document.getElementById('info-email').textContent = userData.email;
+                document.getElementById('info-rol').textContent = userData.rol === 'ADMIN' ? 'Administrador' : userData.rol;
+                document.getElementById('info-sesion').textContent = new Date().toLocaleTimeString();
+            }
+            
+            cargarEstadisticas();
+            document.getElementById('ultima-actividad').textContent = new Date().toLocaleTimeString();
+            
+            setInterval(() => {
+                document.getElementById('ultima-actividad').textContent = new Date().toLocaleTimeString();
+            }, 60000);
+        });
+        
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch('http://localhost:3000/api/usuarios/estadisticas');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.estadisticas) {
+                        const stats = data.estadisticas;
+                        document.getElementById('total-usuarios').textContent = stats.total || '0';
+                        document.getElementById('usuarios-registrados').textContent = stats.total || '0';
+                    }
+                }
+                
+                document.getElementById('quejas-sin-leer').textContent = '0';
+                document.getElementById('multas-pendientes').textContent = '$0';
+                
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+        
+        function cerrarSesion() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.removeItem('biblioteca_user');
+                localStorage.removeItem('biblioteca_token');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

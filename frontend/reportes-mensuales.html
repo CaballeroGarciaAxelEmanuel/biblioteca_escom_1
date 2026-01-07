@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Reportes Mensuales | Biblioteca ESCOM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    color: #333;
+}
+
+/* ===== HEADER ===== */
+.top-bar {
+    background: linear-gradient(135deg, #00447c, #00264d);
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.top-bar h1 {
+    font-size: 22px;
+    margin: 0;
+}
+
+/* ===== BOTONES HEADER ===== */
+.top-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn.back {
+    background: rgba(255,255,255,0.2);
+}
+
+.btn.back:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+.btn.logout {
+    background: #d32f2f;
+}
+
+.btn.logout:hover {
+    background: #b71c1c;
+}
+
+/* ===== CONTENEDOR ===== */
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* ===== FILTROS ===== */
+.filters {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filters select,
+.filters input {
+    padding: 8px;
+    font-size: 14px;
+}
+
+.filters button {
+    background: #00447c;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.filters button:hover {
+    background: #00325c;
+}
+
+/* ===== TARJETAS ===== */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+    font-size: 15px;
+    color: #666;
+}
+
+.card .value {
+    font-size: 30px;
+    font-weight: bold;
+    color: #00447c;
+}
+
+.card.money .value {
+    color: #2e7d32;
+}
+
+/* ===== ERROR ===== */
+#error {
+    color: red;
+    margin-bottom: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<header class="top-bar">
+    <h1>Reportes Mensuales</h1>
+    <div class="top-actions">
+        <button class="btn back" onclick="irDashboard()">Dashboard</button>
+        <button class="btn logout" onclick="logout()">Cerrar sesion</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="filters">
+        <label>Mes:</label>
+        <select id="mes">
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+        </select>
+
+        <label>Año:</label>
+        <input type="number" id="anio" value="2026">
+
+        <!-- ðŸ”´ CLAVE: type="button" y onclick correcto -->
+        <button type="button" onclick="consultarReporte()">Consultar</button>
+    </div>
+    <button type="button" onclick="descargarPDF()">Descargar PDF</button>
+
+
+
+    <div id="error"></div>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Prestamos</h3>
+            <div class="value" id="prestamos">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Libros Dañados</h3>
+            <div class="value" id="danados">0</div>
+        </div>
+
+        <div class="card">
+            <h3>âŒ Libros Perdidos</h3>
+            <div class="value" id="perdidos">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Nuevos Usuarios</h3>
+            <div class="value" id="usuarios">0</div>
+        </div>
+
+        <div class="card money">
+            <h3>Multas Recaudadas</h3>
+            <div class="value" id="recaudado">$0</div>
+        </div>
+    </div>
+</div>
+
+<!-- ðŸ”´ IMPORTANTE: SRC CORRECTO -->
+<script src="js/reportes.js"></script>
+
+</body>
+</html>

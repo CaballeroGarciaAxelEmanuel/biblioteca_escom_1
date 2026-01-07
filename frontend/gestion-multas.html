@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Multas - Biblioteca ESCOM</title>
+    <style>
+        
+    .header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* título a la izquierda, botones juntos */
+    margin-bottom: 16px;
+}
+
+
+
+
+    .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;              /* separación controlada */
+    flex-wrap: wrap;
+}
+
+.header-actions h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+    color: #00447c;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.header-actions .btn {
+    margin-left: 0;
+}
+.header-actions .btn {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+
+.btn-back {
+    background: #7f8c8d;
+    color: #fff;
+}
+
+.btn-back:hover {
+    background: #636e72;
+}
+
+/* Botón cerrar sesión */
+.btn-logout {
+    background: #c0392b;
+    color: #fff;
+}
+
+.btn-logout:hover {
+    background: #a93226;
+}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+        }
+        
+        
+        h1 {
+            color: #00447c;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        h2 {
+            color: #495057;
+            margin: 25px 0 15px 0;
+        }
+        
+        /* Formulario */
+        .form-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #00447c;
+            box-shadow: 0 0 0 0.2rem rgba(0, 68, 124, 0.25);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* Alertas */
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        /* Botones */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #00447c;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #00264d;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        /* Tabla */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: #00447c;
+            color: white;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .estado {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .estado-PENDIENTE {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .estado-PAGADA {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .estado-CANCELADA {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        /* Mensajes de error */
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        /* Búsqueda de materiales */
+        .search-container {
+            position: relative;
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ced4da;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .search-result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .search-result-item small {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+
+        .search-results {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 999;
+}
+
+.search-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.search-item:hover {
+    background: #f2f2f2;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+    <h1>💰 Gestión de Multas y Sanciones</h1>
+
+    <div class="header-buttons">
+        <a href="dashboard-admin.html" class="btn btn-back">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </a>
+
+        <button class="btn btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        </button>
+    </div>
+</div>
+        <!-- Alertas informativas -->
+        <div class="alert alert-warning">
+            <strong>⚠️ IMPORTANTE:</strong> 
+            <ul style="margin: 10px 0 0 20px;">
+                <li>Monto de multas: $1,000 - $3,000 MXN</li>
+                <li>5 materiales perdidos = Bloqueo automático del lector</li>
+                <li>Solo se pueden multar a usuarios con rol "LECTOR" y estado "ACTIVO"</li>
+            </ul>
+        </div>
+
+        <!-- Formulario para registrar multa -->
+        <div class="form-section">
+            <h2>➕ Registrar Nueva Multa</h2>
+            
+            <form id="formRegistrarMulta">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="usuario_id">Lector *</label>
+                        <select id="usuario_id" required>
+                            <option value="">Seleccionar lector...</option>
+                            <!-- Se llenará con JavaScript -->
+                        </select>
+                        <div id="error-usuario" class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Multa *</label>
+                        <select id="tipo" required>
+                            <option value="">Seleccionar tipo...</option>
+                            <option value="PERDIDA">Pérdida de Material</option>
+                            <option value="DANIO">Daño a Material</option>
+                            <option value="RETRASO">Retraso en Devolución</option>
+                        </select>
+                        <div id="error-tipo" class="error-message"></div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="material_search">Buscar Material *</label>
+                        <div class="search-container">
+                            <input type="text" id="material_search" 
+                                   placeholder="Buscar por título, autor o ISBN..."
+                                   autocomplete="off">
+                            <div id="search_results" class="search-results"></div>
+                            <input type="hidden" id="material_id">
+                        </div>
+                        <div id="error-material" class="error-message"></div>
+                        <small>Seleccione un material del catálogo</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="monto">Monto (MXN) *</label>
+                        <input type="number" id="monto" 
+                               min="1000" max="3000" step="100"
+                               placeholder="1500" required>
+                        <small>Entre $1,000 y $3,000 MXN</small>
+                        <div id="error-monto" class="error-message"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcion">Descripción de la Multa</label>
+                    <textarea id="descripcion" 
+                              placeholder="Describa el motivo de la multa..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        💸 Registrar Multa
+                    </button>
+                    <span id="loading" style="display: none; margin-left: 10px;">
+                        ⌛ Procesando...
+                    </span>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Historial de multas -->
+        <div class="form-section">
+            <h2>📜 Historial de Multas Registradas</h2>
+            
+            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                <button id="btnRecargar" class="btn btn-primary">🔄 Recargar Lista</button>
+                <button id="btnEstadisticas" class="btn btn-success">📊 Ver Estadísticas</button>
+            </div>
+            
+            <div class="table-container">
+                <table id="tablaMultas">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Lector</th>
+                            <th>Tipo</th>
+                            <th>Material</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMultasBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 30px;">
+                                ⌛ Cargando multas...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Mensaje de éxito/error -->
+        <div id="messageContainer" style="display: none;"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        const API_URL = 'http://localhost:3000';
+        let searchTimeout = null;
+        
+        // ============================================
+        // 1. CARGAR DATOS INICIALES
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Inicializando gestión de multas...');
+            
+            try {
+                await cargarLectores();
+                await cargarMultas();
+                
+                console.log('✅ Todos los datos cargados');
+                
+                // Configurar búsqueda de materiales
+                configurarBusquedaMateriales();
+                
+            } catch (error) {
+                console.error('❌ Error inicializando:', error);
+                mostrarMensaje('Error al cargar datos iniciales', 'error');
+            }
+        });
+        
+        // ============================================
+        // 2. CARGAR LECTORES (solo ACTIVOS)
+        // ============================================
+        async function cargarLectores() {
+            try {
+                console.log('👥 Cargando lectores...');
+                const response = await fetch(`${API_URL}/api/usuarios`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al obtener usuarios');
+                }
+                
+                const data = await response.json();
+                const select = document.getElementById('usuario_id');
+                
+                // Limpiar opciones excepto la primera
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                
+                // Filtrar solo LECTORES ACTIVOS
+                const lectores = data.usuarios.filter(u => 
+                    u.rol === 'LECTOR' && u.estado === 'ACTIVO'
+                );
+                
+                lectores.forEach(lector => {
+                    const option = document.createElement('option');
+                    option.value = lector.id;
+                    option.textContent = `${lector.nombre} (${lector.email}) - Pérdidas: ${lector.materiales_perdidos_acumulados || 0}`;
+                    select.appendChild(option);
+                });
+                
+                console.log(`✅ ${lectores.length} lectores cargados`);
+                
+            } catch (error) {
+                console.error('Error cargando lectores:', error);
+                mostrarError('usuario', 'No se pudieron cargar los lectores');
+            }
+        }
+        
+        // ============================================
+        // 3. CONFIGURAR BÚSQUEDA DE MATERIALES
+        // ============================================
+        function configurarBusquedaMateriales() {
+            const searchInput = document.getElementById('material_search');
+            const resultsContainer = document.getElementById('search_results');
+            const materialIdInput = document.getElementById('material_id');
+            
+            searchInput.addEventListener('input', function() {
+                const termino = this.value.trim();
+                
+                // Limpiar timeout anterior
+                if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                }
+                
+                // Ocultar resultados si el campo está vacío
+                if (termino.length === 0) {
+                    resultsContainer.style.display = 'none';
+                    materialIdInput.value = '';
+                    return;
+                }
+                
+                // Esperar 300ms antes de buscar (debounce)
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`${API_URL}/api/materiales/buscar?termino=${encodeURIComponent(termino)}`);
+                        const data = await response.json();
+                        
+                        if (data.success && data.materiales.length > 0) {
+                            mostrarResultadosBusqueda(data.materiales);
+                        } else {
+                            resultsContainer.innerHTML = '<div class="search-result-item">No se encontraron materiales</div>';
+                            resultsContainer.style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Error buscando materiales:', error);
+                    }
+                }, 300);
+            });
+            
+            // Ocultar resultados al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+        }
+        
+        // ============================================
+        // 4. MOSTRAR RESULTADOS DE BÚSQUEDA
+        // ============================================
+        function mostrarResultadosBusqueda(materiales) {
+            const resultsContainer = document.getElementById('search_results');
+            const searchInput = document.getElementById('material_search');
+            const materialIdInput = document.getElementById('material_id');
+            
+            resultsContainer.innerHTML = '';
+            
+            materiales.forEach(material => {
+                const div = document.createElement('div');
+                div.className = 'search-result-item';
+                div.innerHTML = `
+                    <strong>${material.titulo}</strong><br>
+                    <small>Autor: ${material.autor} | Editorial: ${material.editorial} | Categoría: ${material.categoria}</small>
+                `;
+                
+                div.addEventListener('click', function() {
+                    searchInput.value = material.titulo;
+                    materialIdInput.value = material.id;
+                    resultsContainer.style.display = 'none';
+                    
+                    // Si el material tiene un valor, sugerirlo como monto
+                    if (material.valor && material.valor >= 1000 && material.valor <= 3000) {
+                        document.getElementById('monto').value = material.valor;
+                    }
+                });
+                
+                resultsContainer.appendChild(div);
+            });
+            
+            resultsContainer.style.display = 'block';
+        }
+
+        
+        
+        // ============================================
+        // 5. CARGAR MULTAS REGISTRADAS
+        // ============================================
+        async function cargarMultas() {
+            try {
+                console.log('💰 Cargando multas...');
+                const response = await fetch(`${API_URL}/api/multas`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al obtener multas');
+                }
+                
+                const data = await response.json();
+                const tbody = document.getElementById('tablaMultasBody');
+                
+                // Limpiar tabla
+                tbody.innerHTML = '';
+                
+                if (!data.multas || data.multas.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 30px; color: #6c757d;">
+                                📭 No hay multas registradas
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Llenar tabla con multas
+                data.multas.forEach(multa => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${multa.id}</td>
+                        <td>
+                            <strong>${multa.usuario_nombre}</strong><br>
+                            <small>${multa.usuario_email}</small>
+                        </td>
+                        <td>${multa.tipo}</td>
+                        <td>
+                            <strong>${multa.material_titulo}</strong><br>
+                            <small>${multa.material_autor} | ${multa.material_categoria}</small>
+                        </td>
+                        <td>
+                            <strong>$${multa.monto} MXN</strong>
+                        </td>
+                        <td>
+                            <span class="estado estado-${multa.estado}">
+                                ${multa.estado}
+                            </span>
+                        </td>
+                        <td>
+                            ${new Date(multa.fecha_multa).toLocaleDateString()}<br>
+                            <small>${new Date(multa.fecha_multa).toLocaleTimeString()}</small>
+                        </td>
+                        <td>
+                            ${multa.estado === 'PENDIENTE' ? `
+                                <button onclick="marcarComoPagada(${multa.id})" 
+                                        class="btn btn-success btn-sm"
+                                        title="Marcar como pagada">
+                                    ✅ Pagar
+                                </button>
+                                <button onclick="cancelarMulta(${multa.id})" 
+                                        class="btn btn-sm"
+                                        style="background: #6c757d; color: white; margin-top: 5px;"
+                                        title="Cancelar multa">
+                                    ❌ Cancelar
+                                </button>
+                            ` : `
+                                <span style="color: #6c757d; font-size: 12px;">
+                                    ${multa.estado === 'PAGADA' && multa.fecha_pago ? 
+                                        'Pagada: ' + new Date(multa.fecha_pago).toLocaleDateString() : 
+                                        'Cancelada'}
+                                </span>
+                            `}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                console.log(`✅ ${data.multas.length} multas cargadas`);
+                
+            } catch (error) {
+                console.error('Error cargando multas:', error);
+                const tbody = document.getElementById('tablaMultasBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 30px; color: #dc3545;">
+                            ❌ Error al cargar multas
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // ============================================
+        // 6. REGISTRAR NUEVA MULTA
+        // ============================================
+        document.getElementById('formRegistrarMulta').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Obtener datos del formulario
+            const multaData = {
+                usuario_id: document.getElementById('usuario_id').value,
+                material_id: document.getElementById('material_id').value,
+                tipo: document.getElementById('tipo').value,
+                monto: parseFloat(document.getElementById('monto').value),
+                descripcion: document.getElementById('descripcion').value
+            };
+            
+            // Validaciones frontend
+            if (!validarMulta(multaData)) return;
+            
+            // Mostrar loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const loadingSpan = document.getElementById('loading');
+            submitBtn.disabled = true;
+            loadingSpan.style.display = 'inline';
+            
+            try {
+                console.log('📤 Enviando multa:', multaData);
+                
+                const response = await fetch(`${API_URL}/api/multas`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(multaData)
+                });
+                
+                const data = await response.json();
+                console.log('📥 Respuesta:', data);
+                
+                if (data.success) {
+                    // Mostrar mensaje de éxito
+                    let mensaje = `<div class="alert alert-success">
+                        <strong>✅ ${data.message}</strong><br>
+                        Multa ID: ${data.multaId} | Monto: $${multaData.monto} MXN<br>
+                        Material: ${data.datos.material} | Lector: ${data.datos.usuario}`;
+                    
+                    if (data.advertencia) {
+                        mensaje += `<br><strong>${data.advertencia}</strong>`;
+                    }
+                    
+                    if (data.datos.perdidasAcumuladas >= 4) {
+                        mensaje += `<br>⚠️ <strong>Atención:</strong> Este lector tiene ${data.datos.perdidasAcumuladas} pérdidas acumuladas`;
+                    }
+                    
+                    mensaje += `</div>`;
+                    
+                    mostrarMensaje(mensaje, 'success');
+                    
+                    // Limpiar formulario
+                    this.reset();
+                    document.getElementById('material_id').value = '';
+                    
+                    // Recargar datos
+                    await Promise.all([
+                        cargarLectores(),
+                        cargarMultas()
+                    ]);
+                    
+                } else {
+                    // Mostrar error específico
+                    mostrarMensaje(
+                        `<div class="alert alert-danger">
+                            <strong>❌ ${data.error || 'Error desconocido'}</strong><br>
+                            ${data.message || ''}
+                        </div>`,
+                        'error'
+                    );
+                }
+                
+            } catch (error) {
+                console.error('Error registrando multa:', error);
+                mostrarMensaje(
+                    `<div class="alert alert-danger">
+                        <strong>❌ Error de conexión</strong><br>
+                        No se pudo conectar con el servidor. Verifique que esté corriendo.
+                    </div>`,
+                    'error'
+                );
+                
+            } finally {
+                // Restaurar botón
+                submitBtn.disabled = false;
+                loadingSpan.style.display = 'none';
+            }
+        });
+        
+        // ============================================
+        // 7. VALIDACIÓN DE DATOS (frontend)
+        // ============================================
+        function validarMulta(data) {
+            let valido = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            
+            // Validar usuario seleccionado
+            if (!data.usuario_id) {
+                mostrarError('usuario', 'Seleccione un lector');
+                valido = false;
+            }
+            
+            // Validar tipo de multa
+            if (!data.tipo) {
+                mostrarError('tipo', 'Seleccione el tipo de multa');
+                valido = false;
+            }
+            
+            // Validar material seleccionado
+            if (!data.material_id) {
+                mostrarError('material', 'Seleccione un material del catálogo');
+                valido = false;
+            }
+            
+            // Validar monto
+            if (!data.monto || data.monto < 1000 || data.monto > 3000) {
+                mostrarError('monto', 'El monto debe estar entre $1,000 y $3,000 MXN');
+                valido = false;
+            }
+            
+            return valido;
+        }
+        
+        // ============================================
+        // 8. MARCAR MULTA COMO PAGADA
+        // ============================================
+        async function marcarComoPagada(multaId) {
+            if (!confirm('¿Marcar esta multa como PAGADA?\n\nEsta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/multas/${multaId}/pagar`, {
+                    method: 'PATCH'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarMensaje(
+                        `<div class="alert alert-success">
+                            ✅ ${data.message}
+                        </div>`,
+                        'success'
+                    );
+                    await cargarMultas();
+                } else {
+                    mostrarMensaje(
+                        `<div class="alert alert-danger">
+                            ❌ ${data.error || 'Error al procesar el pago'}
+                        </div>`,
+                        'error'
+                    );
+                }
+                
+            } catch (error) {
+                console.error('Error pagando multa:', error);
+                mostrarMensaje(
+                    `<div class="alert alert-danger">
+                        ❌ Error al conectar con el servidor
+                    </div>`,
+                    'error'
+                );
+            }
+        }
+        
+        // ============================================
+        // 9. CANCELAR MULTA
+        // ============================================
+        async function cancelarMulta(multaId) {
+            const razon = prompt('Ingrese la razón para cancelar esta multa:');
+            if (razon === null || razon.trim() === '') {
+                alert('Debe ingresar una razón para cancelar la multa');
+                return;
+            }
+            
+            if (!confirm(`¿Cancelar esta multa?\n\nRazón: ${razon}\n\nEsta acción no se puede deshacer.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/multas/${multaId}/cancelar`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ razon })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarMensaje(
+                        `<div class="alert alert-success">
+                            ✅ ${data.message}
+                        </div>`,
+                        'success'
+                    );
+                    await cargarMultas();
+                } else {
+                    mostrarMensaje(
+                        `<div class="alert alert-danger">
+                            ❌ ${data.error || 'Error al cancelar la multa'}
+                        </div>`,
+                        'error'
+                    );
+                }
+                
+            } catch (error) {
+                console.error('Error cancelando multa:', error);
+                mostrarMensaje(
+                    `<div class="alert alert-danger">
+                        ❌ Error al conectar con el servidor
+                    </div>`,
+                    'error'
+                );
+            }
+        }
+        
+        // ============================================
+        // 10. FUNCIONES AUXILIARES
+        // ============================================
+        function mostrarError(campo, mensaje) {
+            const errorElement = document.getElementById(`error-${campo}`);
+            if (errorElement) {
+                errorElement.textContent = mensaje;
+                errorElement.style.display = 'block';
+            }
+        }
+        
+        function mostrarMensaje(html, tipo) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = html;
+            container.style.display = 'block';
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 5000);
+        }
+        
+        // ============================================
+        // 11. EVENTOS DE BOTONES
+        // ============================================
+        document.getElementById('btnRecargar').addEventListener('click', async function() {
+            this.disabled = true;
+            this.textContent = '🔄 Cargando...';
+            
+            await cargarMultas();
+            
+            this.disabled = false;
+            this.textContent = '🔄 Recargar Lista';
+        });
+        
+        document.getElementById('btnEstadisticas').addEventListener('click', async function() {
+            try {
+                const response = await fetch(`${API_URL}/api/multas/estadisticas`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.estadisticas;
+                    let mensaje = `<div class="alert alert-success">
+                        <h4>📊 Estadísticas de Multas</h4>
+                        <ul>
+                            <li><strong>Total multas:</strong> ${stats.total_multas}</li>
+                            <li><strong>Multas pendientes:</strong> ${stats.multas_pendientes}</li>
+                            <li><strong>Multas pagadas:</strong> ${stats.multas_pagadas}</li>
+                            <li><strong>Por pérdida:</strong> ${stats.por_perdida}</li>
+                            <li><strong>Por daño:</strong> ${stats.por_danio}</li>
+                            <li><strong>Por retraso:</strong> ${stats.por_retraso}</li>
+                            <li><strong>Total recaudado:</strong> $${stats.total_recaudado || 0} MXN</li>
+                            <li><strong>Promedio por multa:</strong> $${stats.promedio_monto ? stats.promedio_monto.toFixed(2) : 0} MXN</li>
+                        </ul>`;
+                    
+                    if (data.porCategoria && data.porCategoria.length > 0) {
+                        mensaje += `<h5 style="margin-top: 15px;">📚 Por categoría de material:</h5><ul>`;
+                        data.porCategoria.forEach(m => {
+                            mensaje += `<li>${m.categoria}: ${m.cantidad} multas ($${m.total} MXN)</li>`;
+                        });
+                        mensaje += `</ul>`;
+                    }
+                    
+                    mensaje += `</div>`;
+                    
+                    mostrarMensaje(mensaje, 'success');
+                }
+                
+            } catch (error) {
+                console.error('Error obteniendo estadísticas:', error);
+                mostrarMensaje(
+                    `<div class="alert alert-danger">
+                        ❌ Error al obtener estadísticas
+                    </div>`,
+                    'error'
+                );
+            }
+        });
+        
+        // ============================================
+        // 12. PARA DEBUG
+        // ============================================
+        window.debugMultas = function() {
+            console.log('🔍 Estado actual:');
+            console.log('- URL API:', API_URL);
+            
+            // Probar conexión
+            fetch(`${API_URL}/api/multas`)
+                .then(r => r.json())
+                .then(data => console.log('- Multas en API:', data.multas?.length || 0))
+                .catch(err => console.error('- Error conexión API:', err));
+        };
+        
+        console.log('🚀 Gestión de multas inicializada. Use debugMultas() para diagnóstico.');
+    </script>
+
+    <script>
+    function logout() {
+        if (confirm('¿Desea cerrar sesión?')) {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    }
+</script>
+<script src="js/multas.js"></script>
+
+</body>
+</html>

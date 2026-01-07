@@ -1,0 +1,180 @@
+/* ==============================
+   MODAL BASE
+============================== */
+
+:root {
+    --vino: #7a003c;
+    --vino-oscuro: #5e002f;
+    --vino-claro: rgba(122, 0, 60, 0.12);
+}
+
+.modal {
+    background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+    max-width: 760px;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* ==============================
+   HEADER
+============================== */
+.modal-header {
+    background-color: var(--vino) !important;
+    color: #ffffff !important;
+}
+
+.modal-header h3,
+.modal-header i {
+    color: #ffffff !important;
+}
+
+
+/* ==============================
+   BODY
+============================== */
+.modal-body {
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+.modal-body form {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+}
+.form-group label.required {
+    color: var(--vino);
+    font-weight: 700;
+}
+.form-control:focus {
+    border-color: var(--vino);
+    box-shadow: 0 0 0 2px var(--vino-claro);
+    outline: none;
+}
+
+/* ==============================
+   GRID
+============================== */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 22px;
+}
+
+/* fila completa */
+.form-row.full {
+    grid-template-columns: 1fr;
+}
+
+/* ==============================
+   TÍTULOS
+============================== */
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #333;
+}
+
+/* título especial (Asignar rol) */
+.form-group label.required {
+    color: #7a003c;
+}
+
+/* ==============================
+   INPUTS
+============================== */
+.form-control {
+    padding: 11px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccd3dd;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    border-color: #7a003c;
+    box-shadow: 0 0 0 2px rgba(122,0,60,0.15);
+    outline: none;
+}
+
+/* ==============================
+   MEMBRESÍA
+============================== */
+.form-group input[type="radio"] {
+    margin-right: 6px;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 6px;
+    color: #666;
+}
+
+/* ==============================
+   BOTONES
+============================== */
+.modal-body button.btn-primary {
+    background: #7a003c;
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+}
+
+.modal-body button.btn-primary:hover {
+    background: #5e002f;
+}
+
+.modal-body button.btn {
+    background: #e0e0e0;
+    color: #333;
+    font-weight: 600;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+/* ==============================
+   BOTÓN GUARDAR USUARIO (FIJO)
+============================== */
+.modal-body .btn-primary,
+.modal-body .btn-primary:hover,
+.modal-body .btn-primary:active,
+.modal-body .btn-primary:focus,
+.modal-body .btn-primary:visited {
+    background-color: #7a003c !important;
+    color: #ffffff !important;
+    border: none;
+    font-weight: 600;
+    box-shadow: none;
+    outline: none;
+}
+
+/* evitar efecto gris/azul al presionar */
+.modal-body .btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ==============================
+   BOTÓN CANCELAR
+============================== */
+.modal-body .btn,
+.modal-body .btn:hover,
+.modal-body .btn:active,
+.modal-body .btn:focus {
+    background-color: #e0e0e0;
+    color: #333;
+    font-weight: 600;
+    box-shadow: none;
+    outline: none;
+}
+
+
